@@ -2,7 +2,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 
 # Section 1: CVP Analysis for Normal Sales Cycle (No WhatsApp Promotions)
-st.title("Cost-Volume-Profit (CVP) Analysis for South African Restaurants")
+st.title("Cost-Volume-Profit (CVP) Analysis for Smartfoods")
 
 # Inputs for normal sales cycle
 st.subheader("Section 1: CVP Analysis for Normal Sales Cycle (No WhatsApp Promotions)")
@@ -42,12 +42,23 @@ if contribution_margin > 0:
     ax.plot(volumes, total_costs, label='Total Costs (Fixed + Variable)', color='red')
     ax.plot(volumes, sales_revenue, label='Sales Revenue', color='green')
     ax.axhline(fixed_costs, color='blue', linestyle='--', label='Fixed Costs')
+    
+    # Highlight the break-even point with a dotted vertical line
+    ax.axvline(break_even_volume, color='black', linestyle='--', label=f'Break-even Volume: {break_even_volume:.2f} baskets')
+    
+    # Adjust y-axis in tens of thousands of ZAR
+    ax.set_yticklabels([f'{int(tick / 1000):,}k ZAR' for tick in ax.get_yticks()])
+    
     ax.set_xlabel('Sales Volume (Baskets)')
     ax.set_ylabel('Amount (ZAR)')
     ax.set_title('Cost-Volume-Profit Analysis (No WhatsApp Promotions)')
     ax.legend()
 
     st.pyplot(fig)
+    
+    # Print breakeven mix
+    breakeven_revenue = break_even_volume * avg_basket_value
+    st.write(f"To break even, you need to sell {break_even_volume:.2f} baskets with total revenue of ZAR {breakeven_revenue:,.2f}.")
 
 else:
     st.write("Contribution margin is negative. Please adjust input values.")
@@ -84,12 +95,23 @@ if contribution_margin > 0:
     ax2.plot(volumes, total_costs_with_marketing, label='Total Costs (Fixed + Variable + Marketing)', color='red')
     ax2.plot(volumes, sales_revenue, label='Sales Revenue', color='green')
     ax2.axhline(updated_fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
+    
+    # Highlight the updated break-even point with a dotted vertical line
+    ax2.axvline(updated_break_even_volume, color='black', linestyle='--', label=f'Updated Break-even Volume: {updated_break_even_volume:.2f} baskets')
+    
+    # Adjust y-axis in tens of thousands of ZAR
+    ax2.set_yticklabels([f'{int(tick / 1000):,}k ZAR' for tick in ax2.get_yticks()])
+    
     ax2.set_xlabel('Sales Volume (Baskets)')
     ax2.set_ylabel('Amount (ZAR)')
     ax2.set_title('Cost-Volume-Profit Analysis (With WhatsApp Promotions)')
     ax2.legend()
 
     st.pyplot(fig2)
+    
+    # Print updated breakeven mix
+    updated_breakeven_revenue = updated_break_even_volume * avg_basket_value
+    st.write(f"With WhatsApp promotions, you need to sell {updated_break_even_volume:.2f} baskets with total revenue of ZAR {updated_breakeven_revenue:,.2f}.")
 
 else:
     st.write("Contribution margin is negative. Please adjust input values.")
