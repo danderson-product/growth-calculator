@@ -67,3 +67,69 @@ if contribution_margin > 0:
 else:
     st.error("Contribution margin is negative. Please adjust input values.")
 
+# Section 2: CVP Analysis Including WhatsApp Promotions
+st.subheader("Section 2: CVP Analysis with WhatsApp Promotions")
+
+# Inputs for WhatsApp Promotions (Rearranged order and new placeholders)
+whatsapp_messages_sent = st.number_input("Number of WhatsApp Messages Sent", min_value=0)
+delivery_rate = st.slider("Delivery Rate (%)", min_value=0.0, max_value=100.0, value=85.0) / 100
+conversion_rate = st.slider("Conversion Rate (%)", min_value=0.00, max_value=10.00, value=2.00) / 100
+
+# Input for WhatsApp Cost and Promotional Discount
+whatsapp_cost_per_message = st.number_input("Cost per WhatsApp Message (ZAR)", min_value=0.0)
+promotional_discount = st.slider("Promotional Discount (%)", min_value=0.0, max_value=100.0, value=10.0) / 100
+
+# WhatsApp Promotion Impact
+discounted_basket_value = avg_basket_value * (1 - promotional_discount)  # Apply discount
+expected_customers = whatsapp_messages_sent * delivery_rate * conversion_rate
+st.write(f"Number of converted messages: {expected_customers:.2f}")
+expected_sales = expected_customers * discounted_basket_value  # Use discounted basket value
+total_marketing_cost = whatsapp_messages_sent * whatsapp_cost_per_message
+
+# Updated Break-even Calculations
+updated_fixed_costs = fixed_costs + total_marketing_cost
+if contribution_margin > 0:
+    updated_break_even_volume = updated_fixed_costs / contribution_margin
+    updated_target_volume = (updated_fixed_costs + target_profit) / contribution_margin
+    
+    st.success(f"Updated break-even volume with WhatsApp promotions: {updated_break_even_volume:.2f} baskets")
+    st.success(f"Updated volume to achieve target profit: {updated_target_volume:.2f} baskets")
+    
+    # Graph for WhatsApp Promotion Impact
+    st.write("### Break-even and Target Profit Point Visualization (With WhatsApp Promotions)")
+    
+    total_costs_with_marketing = [updated_fixed_costs + (variable_cost_per_unit * v) for v in volumes]
+
+    fig2, ax2 = plt.subplots()
+    ax2.plot(volumes, total_costs_with_marketing, label='Total Costs (Fixed + Variable + Marketing)', color='red')
+    ax2.plot(volumes, sales_revenue, label='Sales Revenue', color='green')
+    ax2.axhline(updated_fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
+    
+    # Break-even point with WhatsApp
+    ax2.axvline(updated_break_even_volume, color='black', linestyle='--', alpha=0.6)
+    ax2.axhline(updated_break_even_volume * discounted_basket_value, color='black', linestyle='--', alpha=0.6)
+    ax2.plot([updated_break_even_volume, updated_break_even_volume], [0, updated_break_even_volume * discounted_basket_value], linestyle='--', color='black', alpha=0.6)
+    
+    # Target profit point with WhatsApp
+    updated_target_profit_revenue = updated_target_volume * discounted_basket_value
+    ax2.axvline(updated_target_volume, color='orange', linestyle='--', alpha=0.6)
+    ax2.axhline(updated_target_profit_revenue, color='orange', linestyle='--', alpha=0.6)
+    ax2.plot([updated_target_volume, updated_target_volume], [0, updated_target_profit_revenue], linestyle='--', color='orange', alpha=0.6)
+    
+    # Adjust y-axis in tens of thousands of ZAR
+    ax2.set_yticklabels([f'{int(tick / 1000):,}k ZAR' for tick in ax2.get_yticks()])
+    
+    ax2.set_xlabel('Sales Volume (Baskets)')
+    ax2.set_ylabel('Amount (ZAR)')
+    ax2.set_title('Cost-Volume-Profit Analysis (With WhatsApp Promotions)')
+    ax2.legend()
+
+    st.pyplot(fig2)
+    
+    # Print updated breakeven mix and target profit mix
+    updated_breakeven_revenue = updated_break_even_volume * discounted_basket_value
+    st.success(f"With WhatsApp promotions, you need to sell {updated_break_even_volume:.2f} baskets with total revenue of ZAR {updated_breakeven_revenue:,.2f}.")
+    st.success(f"To achieve target profit with WhatsApp promotions, you need to sell {updated_target_volume:.2f} baskets with total revenue of ZAR {updated_target_profit_revenue:,.2f}.")
+
+else:
+    st.write("Contribution margin is negative. Please adjust input values.")
