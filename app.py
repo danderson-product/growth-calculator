@@ -30,25 +30,27 @@ if contribution_margin > 0:
     
     st.write(f"Break-even volume: {break_even_volume:.2f} baskets")
     st.write(f"Volume to achieve target profit: {target_volume:.2f} baskets")
+
+    # Graph for Normal Sales Cycle (No WhatsApp Promotions)
+    st.write("### Break-even Point Visualization (Normal Sales Cycle)")
+    
+    volumes = range(0, int(target_volume) + 100)
+    total_costs = [fixed_costs + (variable_cost_per_unit * v) for v in volumes]
+    sales_revenue = [avg_basket_value * v for v in volumes]
+
+    fig, ax = plt.subplots()
+    ax.plot(volumes, total_costs, label='Total Costs (Fixed + Variable)', color='red')
+    ax.plot(volumes, sales_revenue, label='Sales Revenue', color='green')
+    ax.axhline(fixed_costs, color='blue', linestyle='--', label='Fixed Costs')
+    ax.set_xlabel('Sales Volume (Baskets)')
+    ax.set_ylabel('Amount (ZAR)')
+    ax.set_title('Cost-Volume-Profit Analysis (No WhatsApp Promotions)')
+    ax.legend()
+
+    st.pyplot(fig)
+
 else:
     st.write("Contribution margin is negative. Please adjust input values.")
-
-# Graph for Normal Sales Cycle (No WhatsApp Promotions)
-st.write("### Break-even Point Visualization (Normal Sales Cycle)")
-volumes = range(0, int(target_volume) + 100)
-total_costs = [fixed_costs + (variable_cost_per_unit * v) for v in volumes]
-sales_revenue = [avg_basket_value * v for v in volumes]
-
-fig, ax = plt.subplots()
-ax.plot(volumes, total_costs, label='Total Costs (Fixed + Variable)', color='red')
-ax.plot(volumes, sales_revenue, label='Sales Revenue', color='green')
-ax.axhline(fixed_costs, color='blue', linestyle='--', label='Fixed Costs')
-ax.set_xlabel('Sales Volume (Baskets)')
-ax.set_ylabel('Amount (ZAR)')
-ax.set_title('Cost-Volume-Profit Analysis (No WhatsApp Promotions)')
-ax.legend()
-
-st.pyplot(fig)
 
 # Section 2: CVP Analysis Including WhatsApp Promotions
 st.subheader("Section 2: CVP Analysis with WhatsApp Promotions")
@@ -72,20 +74,22 @@ if contribution_margin > 0:
     
     st.write(f"Updated break-even volume with WhatsApp promotions: {updated_break_even_volume:.2f} baskets")
     st.write(f"Updated volume to achieve target profit: {updated_target_volume:.2f} baskets")
+    
+    # Graph for WhatsApp Promotion Impact
+    st.write("### Break-even Point Visualization (With WhatsApp Promotions)")
+    
+    total_costs_with_marketing = [updated_fixed_costs + (variable_cost_per_unit * v) for v in volumes]
+
+    fig2, ax2 = plt.subplots()
+    ax2.plot(volumes, total_costs_with_marketing, label='Total Costs (Fixed + Variable + Marketing)', color='red')
+    ax2.plot(volumes, sales_revenue, label='Sales Revenue', color='green')
+    ax2.axhline(updated_fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
+    ax2.set_xlabel('Sales Volume (Baskets)')
+    ax2.set_ylabel('Amount (ZAR)')
+    ax2.set_title('Cost-Volume-Profit Analysis (With WhatsApp Promotions)')
+    ax2.legend()
+
+    st.pyplot(fig2)
+
 else:
     st.write("Contribution margin is negative. Please adjust input values.")
-
-# Graph for WhatsApp Promotion Impact
-st.write("### Break-even Point Visualization (With WhatsApp Promotions)")
-total_costs_with_marketing = [updated_fixed_costs + (variable_cost_per_unit * v) for v in volumes]
-
-fig2, ax2 = plt.subplots()
-ax2.plot(volumes, total_costs_with_marketing, label='Total Costs (Fixed + Variable + Marketing)', color='red')
-ax2.plot(volumes, sales_revenue, label='Sales Revenue', color='green')
-ax2.axhline(updated_fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
-ax2.set_xlabel('Sales Volume (Baskets)')
-ax2.set_ylabel('Amount (ZAR)')
-ax2.set_title('Cost-Volume-Profit Analysis (With WhatsApp Promotions)')
-ax2.legend()
-
-st.pyplot(fig2)
