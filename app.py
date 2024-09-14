@@ -80,6 +80,9 @@ whatsapp_messages_sent = st.number_input("Number of WhatsApp Messages Sent", min
 delivery_rate = st.slider("Delivery Rate (%)", min_value=0.0, max_value=100.0, value=85.0) / 100
 conversion_rate = st.slider("Conversion Rate (%)", min_value=0.00, max_value=10.00, value=2.00) / 100
 
+# Input for WhatsApp Cost (this was missing before)
+whatsapp_cost_per_message = st.number_input("Cost per WhatsApp Message (ZAR)", min_value=0.0)
+
 # WhatsApp Promotion Impact
 expected_customers = whatsapp_messages_sent * delivery_rate * conversion_rate
 st.write(f"Number of converted messages: {expected_customers:.2f}")
