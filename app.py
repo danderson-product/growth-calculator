@@ -6,10 +6,10 @@ st.title("Cost-Volume-Profit (CVP) Analysis for Smartfoods")
 
 # Inputs for normal sales cycle
 st.subheader("Section 1: CVP Analysis for Normal Sales Cycle (No WhatsApp Promotions)")
-fixed_costs = st.number_input("Fixed Operating Costs (ZAR)", min_value=0.0)
-variable_cost_per_unit = st.number_input("Variable Cost per Basket (Average Variable Cost per Meal, ZAR)", min_value=0.0)
-avg_basket_value = st.number_input("Average Basket Value (Average Meal Value, ZAR)", min_value=0.0)
-target_profit = st.number_input("Target Profit (Total Profit Goal, ZAR)", min_value=0.0)
+fixed_costs = st.number_input("Fixed Operating Costs (ZAR)", min_value=0.0, value=100000.0)
+variable_cost_per_unit = st.number_input("Variable Cost per Basket (Average Variable Cost per Meal, ZAR)", min_value=0.0, value=50.0)
+avg_basket_value = st.number_input("Average Basket Value (Average Meal Value, ZAR)", min_value=0.0, value=100.0)
+target_profit = st.number_input("Target Profit (Total Profit Goal, ZAR)", min_value=0.0, value=650000.0)
 
 # Contribution Margin Calculation
 contribution_margin = avg_basket_value - variable_cost_per_unit
@@ -71,12 +71,12 @@ else:
     st.subheader("Section 2: CVP Analysis with WhatsApp Promotions")
 
     # Inputs for WhatsApp Promotions (Rearranged order and new placeholders)
-    whatsapp_messages_sent = st.number_input("Number of WhatsApp Messages Sent", min_value=0)
+    whatsapp_messages_sent = st.number_input("Number of WhatsApp Messages Sent", min_value=0, value=6000)
     delivery_rate = st.slider("Delivery Rate (%)", min_value=0.0, max_value=100.0, value=85.0) / 100
     conversion_rate = st.slider("Conversion Rate (%)", min_value=0.00, max_value=10.00, value=2.00) / 100
 
     # Input for WhatsApp Cost and Promotional Discount
-    whatsapp_cost_per_message = st.number_input("Cost per WhatsApp Message (ZAR)", min_value=0.0)
+    whatsapp_cost_per_message = st.number_input("Cost per WhatsApp Message (ZAR)", min_value=0.0, value=0.10)
     promotional_discount = st.slider("Promotional Discount (%)", min_value=0.0, max_value=100.0, value=10.0) / 100
 
     # WhatsApp Promotion Impact
@@ -86,28 +86,39 @@ else:
     expected_sales = expected_customers * discounted_basket_value
     total_marketing_cost = whatsapp_messages_sent * whatsapp_cost_per_message
 
-    # Calculate the remaining customers needed at regular basket value to reach target profit
-    remaining_target_profit = target_profit - (expected_customers * discounted_basket_value)
-    regular_customers_volume = remaining_target_profit / avg_basket_value if remaining_target_profit > 0 else 0
+    # Step 1: Calculate marketing costs (number of messages sent * cost per message)
+    marketing_costs = whatsapp_messages_sent * whatsapp_cost_per_message
 
-    # Total sales volume is regular customers + WhatsApp converted customers
-    total_sales_volume_corrected = regular_customers_volume + expected_customers
-    corrected_target_revenue = (regular_customers_volume * avg_basket_value) + (expected_customers * discounted_basket_value)
+    # Step 2: Calculate the new grand total (fixed costs + marketing costs + target profit)
+    grand_total = fixed_costs + marketing_costs + target_profit
 
-    # Updated break-even volume with WhatsApp promotions
-    corrected_break_even_volume = (fixed_costs + total_marketing_cost) / contribution_margin
+    # Step 3: Calculate the new contribution margin for the discounted WhatsApp-converted customers
+    new_contribution_margin = discounted_basket_value - variable_cost_per_unit
+
+    # Contribution from WhatsApp-converted customers
+    whatsapp_sales_contribution = expected_customers * new_contribution_margin
+
+    # Step 4: Subtract the WhatsApp contribution from the grand total
+    remaining_grand_total = grand_total - whatsapp_sales_contribution
+
+    # Step 5: Calculate the number of regular sales needed using the section 1 (non-discounted) contribution margin
+    remaining_sales_needed = remaining_grand_total / contribution_margin if contribution_margin > 0 else 0
+
+    # Total sales is the sum of regular sales + WhatsApp-converted customers
+    total_sales = remaining_sales_needed + expected_customers
 
     # Display updated results for Section 2
-    st.success(f"Regular customers (non-discounted): {regular_customers_volume:.2f} customers")
-    st.success(f"WhatsApp converted customers (discounted): {expected_customers:.2f} customers")
-    st.success(f"Total sales volume needed: {total_sales_volume_corrected:.2f} customers")
-    st.success(f"Total revenue to achieve profit goal: ZAR {corrected_target_revenue:,.2f}")
-    st.success(f"Updated break-even volume: {corrected_break_even_volume:.2f} baskets")
+    st.success(f"Marketing Costs: ZAR {marketing_costs:.2f}")
+    st.success(f"Grand Total (Fixed Costs + Marketing Costs + Target Profit): ZAR {grand_total:.2f}")
+    st.success(f"WhatsApp Sales Contribution: ZAR {whatsapp_sales_contribution:.2f}")
+    st.success(f"Remaining Grand Total after WhatsApp Sales Contribution: ZAR {remaining_grand_total:.2f}")
+    st.success(f"Remaining Regular Sales Needed: {remaining_sales_needed:.2f}")
+    st.success(f"Total Sales (Regular + WhatsApp Converted): {total_sales:.2f}")
 
     # Graph for Section 2
-    volumes_with_discount = range(0, int(total_sales_volume_corrected) + 100)
+    volumes_with_discount = range(0, int(total_sales) + 100)
     total_costs_with_marketing = [fixed_costs + total_marketing_cost + (variable_cost_per_unit * v) for v in volumes_with_discount]
-    sales_revenue_with_discount = [avg_basket_value * regular_customers_volume + discounted_basket_value * expected_customers for v in volumes_with_discount]
+    sales_revenue_with_discount = [avg_basket_value * remaining_sales_needed + discounted_basket_value * expected_customers for v in volumes_with_discount]
 
     fig2, ax2 = plt.subplots()
     ax2.plot(volumes_with_discount, total_costs_with_marketing, label='Total Costs (Fixed + Variable + Marketing)', color='red')
@@ -115,8 +126,8 @@ else:
     ax2.axhline(fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
 
     # Plot the updated break-even point
-    ax2.axvline(corrected_break_even_volume, color='black', linestyle='--', alpha=0.6)
-    ax2.axhline(corrected_break_even_volume * avg_basket_value, color='black', linestyle='--', alpha=0.6)
+    ax2.axvline(remaining_sales_needed, color='black', linestyle='--', alpha=0.6)
+    ax2.axhline(remaining_sales_needed * avg_basket_value, color='black', linestyle='--', alpha=0.6)
 
     # Adjust y-axis in tens of thousands of ZAR
     ax2.set_yticklabels([f'{int(tick / 1000):,}k ZAR' for tick in ax2.get_yticks()])
