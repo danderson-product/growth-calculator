@@ -140,6 +140,8 @@ else:
    
     # Add horizontal line for fixed + marketing costs
     ax2.axhline(fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
+    # Adjust y-axis in tens of thousands of ZAR
+    ax2.set_yticklabels([f'{int(tick / 1000):,}k ZAR' for tick in ax.get_yticks()])
    
     # Title, labels, and legend
     ax2.set_xlabel('Sales Volume (Baskets)')
