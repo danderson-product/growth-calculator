@@ -87,9 +87,9 @@ else:
     delivery_rate = st.slider("Delivery Rate (%)", min_value=0.0, max_value=100.0, value=85.0) / 100
     conversion_rate = st.slider("Conversion Rate (%)", min_value=0.00, max_value=10.00, value=2.00) / 100
 
-    # Input for WhatsApp Cost and Promotional Discount
+    # Input for WhatsApp Cost and Promotional Discount with 5% increments
     whatsapp_cost_per_message = st.number_input("Cost per WhatsApp Message (ZAR)", min_value=0.0, value=0.0)
-    promotional_discount = st.slider("Promotional Discount (%)", min_value=0.0, max_value=100.0, value=0.0) / 100
+    promotional_discount = st.slider("Promotional Discount (%)", min_value=0.0, max_value=100.0, value=0.0, step=5.0) / 100
 
     # WhatsApp Promotion Impact
     discounted_basket_value = avg_basket_value * (1 - promotional_discount)
@@ -130,11 +130,13 @@ else:
     # Graph for Section 2
     volumes_with_discount = range(0, int(total_sales) + 100)
     total_costs_with_marketing = [fixed_costs + total_marketing_cost + (variable_cost_per_unit * v) for v in volumes_with_discount]
-    sales_revenue_with_discount = [avg_basket_value * remaining_sales_needed + discounted_basket_value * expected_customers for v in volumes_with_discount]
+    regular_sales_revenue = [avg_basket_value * v for v in volumes_with_discount]  # Regular revenue line
+    total_sales_revenue = [(avg_basket_value * v) + (discounted_basket_value * expected_customers) for v in volumes_with_discount]  # Total revenue line
 
     fig2, ax2 = plt.subplots()
     ax2.plot(volumes_with_discount, total_costs_with_marketing, label='Total Costs (Fixed + Variable + Marketing)', color='red')
-    ax2.plot(volumes_with_discount, sales_revenue_with_discount, label='Sales Revenue', color='green')
+    ax2.plot(volumes_with_discount, regular_sales_revenue, label='Regular Sales Revenue', color='green')  # Regular revenue line
+    ax2.plot(volumes_with_discount, total_sales_revenue, label='Total Sales Revenue (Regular + Promo)', color='blue')  # Total revenue line
     ax2.axhline(fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
 
     st.pyplot(fig2)
