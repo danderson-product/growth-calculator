@@ -1,15 +1,31 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 
-# Section 1: CVP Analysis for Normal Sales Cycle (No WhatsApp Promotions)
+# Brief Explanation of CVP Analysis
 st.title("Cost-Volume-Profit (CVP) Analysis for Smartfoods")
+st.write("""
+### Cost-Volume-Profit (CVP) Analysis Overview:
+CVP analysis helps you understand how changes in costs and sales volume affect profitability. The goal is to determine the break-even point and the volume of sales needed to achieve a target profit.
 
-# Inputs for normal sales cycle
+**Key Terms:**
+1. **Contribution Margin**: The amount left after deducting variable costs from sales revenue. It contributes to covering fixed costs and generating profit.  
+   - Formula: Contribution Margin = Sales Price per Unit - Variable Cost per Unit
+
+2. **Break-even Point**: The sales volume where total revenue equals total costs (no profit or loss).  
+   - Formula: Break-even Sales Volume = Fixed Costs / Contribution Margin
+
+3. **Target Profit**: The sales volume required to achieve a specific profit goal.  
+   - Formula: Target Sales Volume = (Fixed Costs + Target Profit) / Contribution Margin
+""")
+
+# Section 1: CVP Analysis for Normal Sales Cycle (No WhatsApp Promotions)
 st.subheader("Section 1: CVP Analysis for Normal Sales Cycle (No WhatsApp Promotions)")
-fixed_costs = st.number_input("Fixed Operating Costs (ZAR)", min_value=0.0, value=100000.0)
-variable_cost_per_unit = st.number_input("Variable Cost per Basket (Average Variable Cost per Meal, ZAR)", min_value=0.0, value=50.0)
-avg_basket_value = st.number_input("Average Basket Value (Average Meal Value, ZAR)", min_value=0.0, value=100.0)
-target_profit = st.number_input("Target Profit (Total Profit Goal, ZAR)", min_value=0.0, value=650000.0)
+
+# Inputs for normal sales cycle with placeholders set to zero
+fixed_costs = st.number_input("Fixed Operating Costs (ZAR)", min_value=0.0, value=0.0)
+variable_cost_per_unit = st.number_input("Variable Cost per Basket (Average Variable Cost per Meal, ZAR)", min_value=0.0, value=0.0)
+avg_basket_value = st.number_input("Average Basket Value (Average Meal Value, ZAR)", min_value=0.0, value=0.0)
+target_profit = st.number_input("Target Profit (Total Profit Goal, ZAR)", min_value=0.0, value=0.0)
 
 # Contribution Margin Calculation
 contribution_margin = avg_basket_value - variable_cost_per_unit
@@ -63,21 +79,17 @@ else:
 
     st.pyplot(fig)
 
-    # Print breakeven mix and target profit mix
-    st.success(f"To break even, you need to sell {break_even_volume:.2f} baskets with total revenue of ZAR {break_even_revenue:,.2f}.")
-    st.success(f"To achieve the total profit goal of ZAR {target_profit:,.2f}, you need to sell {target_volume:.2f} baskets with total revenue of ZAR {target_profit_revenue:,.2f}.")
-
     # Section 2: CVP Analysis Including WhatsApp Promotions
     st.subheader("Section 2: CVP Analysis with WhatsApp Promotions")
 
-    # Inputs for WhatsApp Promotions (Rearranged order and new placeholders)
-    whatsapp_messages_sent = st.number_input("Number of WhatsApp Messages Sent", min_value=0, value=6000)
+    # Inputs for WhatsApp Promotions (Placeholders set only for delivery rate and conversion rate)
+    whatsapp_messages_sent = st.number_input("Number of WhatsApp Messages Sent", min_value=0, value=0)
     delivery_rate = st.slider("Delivery Rate (%)", min_value=0.0, max_value=100.0, value=85.0) / 100
     conversion_rate = st.slider("Conversion Rate (%)", min_value=0.00, max_value=10.00, value=2.00) / 100
 
     # Input for WhatsApp Cost and Promotional Discount
-    whatsapp_cost_per_message = st.number_input("Cost per WhatsApp Message (ZAR)", min_value=0.0, value=0.10)
-    promotional_discount = st.slider("Promotional Discount (%)", min_value=0.0, max_value=100.0, value=10.0) / 100
+    whatsapp_cost_per_message = st.number_input("Cost per WhatsApp Message (ZAR)", min_value=0.0, value=0.0)
+    promotional_discount = st.slider("Promotional Discount (%)", min_value=0.0, max_value=100.0, value=0.0) / 100
 
     # WhatsApp Promotion Impact
     discounted_basket_value = avg_basket_value * (1 - promotional_discount)
@@ -124,17 +136,5 @@ else:
     ax2.plot(volumes_with_discount, total_costs_with_marketing, label='Total Costs (Fixed + Variable + Marketing)', color='red')
     ax2.plot(volumes_with_discount, sales_revenue_with_discount, label='Sales Revenue', color='green')
     ax2.axhline(fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
-
-    # Plot the updated break-even point
-    ax2.axvline(remaining_sales_needed, color='black', linestyle='--', alpha=0.6)
-    ax2.axhline(remaining_sales_needed * avg_basket_value, color='black', linestyle='--', alpha=0.6)
-
-    # Adjust y-axis in tens of thousands of ZAR
-    ax2.set_yticklabels([f'{int(tick / 1000):,}k ZAR' for tick in ax2.get_yticks()])
-
-    ax2.set_xlabel('Sales Volume (Baskets)')
-    ax2.set_ylabel('Amount (ZAR)')
-    ax2.set_title('Cost-Volume-Profit Analysis (With WhatsApp Promotions)')
-    ax2.legend()
 
     st.pyplot(fig2)
