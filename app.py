@@ -127,16 +127,26 @@ else:
     st.success(f"Remaining Regular Sales Needed: {remaining_sales_needed:.2f}")
     st.success(f"Total Sales (Regular + WhatsApp Converted): {total_sales:.2f}")
 
-    # Graph for Section 2
-    volumes_with_discount = range(0, int(total_sales) + 100)
-    total_costs_with_marketing = [fixed_costs + total_marketing_cost + (variable_cost_per_unit * v) for v in volumes_with_discount]
-    regular_sales_revenue = [avg_basket_value * v for v in volumes_with_discount]  # Regular revenue line
-    total_sales_revenue = [(avg_basket_value * v) + (discounted_basket_value * expected_customers) for v in volumes_with_discount]  # Total revenue line
+   # Graph for Section 2 with proper labels and legend
+   volumes_with_discount = range(0, int(total_sales) + 100)
+   total_costs_with_marketing = [fixed_costs + total_marketing_cost + (variable_cost_per_unit * v) for v in volumes_with_discount]
+   regular_sales_revenue = [avg_basket_value * v for v in volumes_with_discount]  # Regular revenue line
+   total_sales_revenue = [(avg_basket_value * v) + (discounted_basket_value * expected_customers) for v in volumes_with_discount]  # Total revenue line
+   
+   fig2, ax2 = plt.subplots()
+   ax2.plot(volumes_with_discount, total_costs_with_marketing, label='Total Costs (Fixed + Variable + Marketing)', color='red')
+   ax2.plot(volumes_with_discount, regular_sales_revenue, label='Regular Sales Revenue', color='green')  # Regular revenue line
+   ax2.plot(volumes_with_discount, total_sales_revenue, label='Total Sales Revenue (Regular + Promo)', color='blue')  # Total revenue line
+   
+   # Add horizontal line for fixed + marketing costs
+   ax2.axhline(fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
+   
+   # Title, labels, and legend
+   ax2.set_xlabel('Sales Volume (Baskets)')
+   ax2.set_ylabel('Amount (ZAR)')
+   ax2.set_title('Cost-Volume-Profit Analysis (With WhatsApp Promotions)')
+   ax2.legend()
+   
+   # Show the updated chart
+   st.pyplot(fig2)
 
-    fig2, ax2 = plt.subplots()
-    ax2.plot(volumes_with_discount, total_costs_with_marketing, label='Total Costs (Fixed + Variable + Marketing)', color='red')
-    ax2.plot(volumes_with_discount, regular_sales_revenue, label='Regular Sales Revenue', color='green')  # Regular revenue line
-    ax2.plot(volumes_with_discount, total_sales_revenue, label='Total Sales Revenue (Regular + Promo)', color='blue')  # Total revenue line
-    ax2.axhline(fixed_costs, color='blue', linestyle='--', label='Fixed + Marketing Costs')
-
-    st.pyplot(fig2)
